@@ -8,6 +8,20 @@
 # include <string.h>
 # include <sys/time.h>
 
+// philo is thinking
+# define BLUE "\033[0;34m"
+// philo died
+# define RED "\033[1;31m"
+// philo is eating
+# define GREEN "\033[0;32m"
+// philo has taken a fork
+# define YELLOW "\033[0;33m"
+// philo is sleeping
+# define CYAN "\033[0;36m"
+// timer
+# define PURPLE "\033[0;35m"
+# define RESET "\033[0m"
+
 typedef struct		s_forks {
 	int				*fork;
 	struct s_forks	*next;
