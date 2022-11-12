@@ -37,7 +37,7 @@ long long int get_time(struct timeval start)
 int	me_nao_dead(char *die_time, long long int eat_time, struct timeval start)
 {
 	//printf("1 = %lld 2 = %d	\n", get_time(start) - eat_time, ft_atoi(die_time));
-	if (get_time(start)	 - eat_time > ft_atoi(die_time))
+	if (get_time(start)	 - eat_time >= ft_atoi(die_time))
 		return (1);
 	return (0);
 }
@@ -59,14 +59,14 @@ void	*fThread(void *a)
 		if (*((t_philo *)a)->esq->fork == 1)
 		{
 			*((t_philo *)a)->esq->fork = 2;
-//			printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c + 1);
-			if(*((t_philo *)a)->dir->fork == 1)
+			printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c + 1);
+			if (*((t_philo *)a)->dir->fork == 1 && ((t_philo *)a)->args[1][0] != '1')
 			{
 				*((t_philo *)a)->dir->fork = 2;
 				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c + 1);
 				eat_time = get_time(start);
-				pthread_mutex_unlock(&mt1);
 				printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c + 1);
+				pthread_mutex_unlock(&mt1);
 				usleep(ft_atoi(((t_philo *) a)->args[3]) * 1000);
 				pthread_mutex_lock(&mt2);
 				*((t_philo *)a)->esq->fork = 1;
@@ -75,10 +75,7 @@ void	*fThread(void *a)
 				sleep = 1;
 			}
 			else
-			{
-				*((t_philo *)a)->esq->fork = 1;
 				pthread_mutex_unlock(&mt1);
-			}
 		}
 		else
 			pthread_mutex_unlock(&mt1);
@@ -86,8 +83,8 @@ void	*fThread(void *a)
 		{
 			printf(PURPLE"%lld ms "CYAN"%d is sleeping\n"RESET, get_time(start), c + 1);
 			usleep(ft_atoi(((t_philo *) a)->args[4]) * 1000);
-			sleep = 0;
 			printf(PURPLE"%lld ms "BLUE"%d is thinking\n"RESET, get_time(start), c + 1);
+			sleep = 0;
 		}
 	}
 	printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c + 1);
@@ -144,12 +141,10 @@ int main(int ac, char **av)
 		a->esq = NULL;
 		a->dir = NULL;
 		a->esq = getfork(*forks, i);
-		if (i == ft_atoi(av[1]) - 1) {
+		if (i == ft_atoi(av[1]) - 1)
 			a->dir = getfork(*forks, 0);
-		}
-		else {
+		else
 			a->dir = getfork(*forks, i + 1);
-		}
 		a->ind = malloc(sizeof (int));
 		a->args = av;
 		*a->ind = i;
