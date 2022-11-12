@@ -22,26 +22,29 @@
 # define PURPLE "\033[0;35m"
 # define RESET "\033[0m"
 
-typedef struct		s_forks {
-	int				*fork;
-	struct s_forks	*next;
-} 					t_forks;
+typedef struct		s_lst {
+	int				*q;
+	struct s_lst	*next;
+} 					t_lst;
+
 
 typedef struct s_philo{
-	char			**args;
-	int				*ind;
-	t_forks 		*esq;
-	t_forks 		*dir;
+	char		**args;
+	int			*ind;
+	t_lst		*x;
+	t_lst 		*esq;
+	t_lst 		*dir;
 	pthread_mutex_t	*mt;
 }					t_philo;
 
-void printforks(t_forks *lst);
-t_forks *getfork(t_forks *lst, int n);
-void buildforks(t_forks **lst, int n);
-void	crono_thread(t_forks **forks);
-t_forks *ft_lstnew(int *content);
-void	ft_lstadd_back(t_forks **lst, t_forks *new);
-void	ft_lstfront(t_forks **lst, t_forks *new);
-void *fThread_Timer(void *forks);
+t_lst	*get_item(t_lst *lst, int n, int flag);
+void	buildlst(t_lst **lst, int n);
+t_lst	*ft_lstnew(int *content);
+void	ft_lstadd_back(t_lst **lst, t_lst *new);
+void	ft_lstfront(t_lst **lst, t_lst *new);
+void	*fThread_Timer(void *forks);
+
+void	printforks(t_lst *lst);
+void	crono_thread(t_lst **forks);
 
 #endif

@@ -1,24 +1,26 @@
 #include "../inc/philo.h"
 
-void printforks(t_forks *lst)
+void printforks(t_lst *lst)
 {
-	t_forks *tmp;
+	t_lst *tmp;
 
 	tmp = lst;
 	while (tmp)
 	{
-		printf("Fork: %d ", *tmp->fork);
-		printf("Address: %p |", tmp->fork);
+		printf("Fork: %d ", *tmp->q);
+		printf("Address: %p |", tmp->q);
 		tmp = tmp->next;
 	}
 	printf("\n");
 }
 
-t_forks *getfork(t_forks *lst, int n)
+t_lst *get_item(t_lst *lst, int n, int flag)
 {
 	int		i;
-	t_forks	*tmp;
+	t_lst	*tmp;
 
+	if (flag == 0)
+		return	NULL;
 	i = 0;
 	tmp = lst;
 	while (i < n)
@@ -29,7 +31,7 @@ t_forks *getfork(t_forks *lst, int n)
 	return (tmp);
 }
 
-void buildforks(t_forks **lst, int n)
+void buildlst(t_lst **lst, int n)
 {
 	int i;
 	int *content;
@@ -48,11 +50,12 @@ void buildforks(t_forks **lst, int n)
 	}
 }
 
-void	crono_thread(t_forks **forks)
+void	crono_thread(t_lst **forks)
 {
 	pthread_t	*t1;
 
 	t1 = malloc(sizeof(pthread_t));
 	pthread_create(t1, NULL, fThread_Timer, (void *) forks);
-
 }
+
+//int eatcounter(char **args, )

@@ -36,7 +36,6 @@ long long int get_time(struct timeval start)
 
 int	me_nao_dead(char *die_time, long long int eat_time, struct timeval start)
 {
-	//printf("1 = %lld 2 = %d	\n", get_time(start) - eat_time, ft_atoi(die_time));
 	if (get_time(start)	 - eat_time >= ft_atoi(die_time))
 		return (1);
 	return (0);
@@ -56,21 +55,22 @@ void	*fThread(void *a)
 	while (!me_nao_dead(((t_philo *)a)->args[2], eat_time, start))
 	{
 		pthread_mutex_lock(&mt1);
-		if (*((t_philo *)a)->esq->fork == 1)
+		if (*((t_philo *)a)->esq->q == 1)
 		{
-			*((t_philo *)a)->esq->fork = 2;
+			*((t_philo *)a)->esq->q = 2;
 			printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c + 1);
-			if (*((t_philo *)a)->dir->fork == 1 && ((t_philo *)a)->args[1][0] != '1')
+			if (*((t_philo *)a)->dir->q == 1 && ((t_philo *)a)->args[1][0] != '1')
 			{
-				*((t_philo *)a)->dir->fork = 2;
+				*((t_philo *)a)->dir->q = 2;
 				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c + 1);
 				eat_time = get_time(start);
 				printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c + 1);
-				pthread_mutex_unlock(&mt1);
 				usleep(ft_atoi(((t_philo *) a)->args[3]) * 1000);
+				*((t_philo *)a)->x->q += 1;
+				pthread_mutex_unlock(&mt1);
 				pthread_mutex_lock(&mt2);
-				*((t_philo *)a)->esq->fork = 1;
-				*((t_philo *)a)->dir->fork = 1;
+				*((t_philo *)a)->esq->q = 1;
+				*((t_philo *)a)->dir->q = 1;
 				pthread_mutex_unlock(&mt2);
 				sleep = 1;
 			}
@@ -122,29 +122,38 @@ int main(int ac, char **av)
 	int				i;
 	t_philo 		*a;
 	pthread_t		th[124535];
-	t_forks 		**forks;
+	t_lst			**forks;
+	t_lst			**ctr;
+	int 			flag;
 
-	if (ac != 5)
+	if (!(ac == 5 || ac == 6))
 	{
 		printf("Error: wrong number of arguments\n");
 		return (0);
 	}
-	forks = malloc(sizeof(t_forks *));
-	buildforks(forks, ft_atoi(av[1]));
-	i = 0;
+	flag = 0;
+	if (ac == 6)
+		flag = 1;
+	ctr = malloc(sizeof(t_lst *));
+	buildlst(ctr, ft_atoi(av[1]));
+	forks = malloc(sizeof(t_lst *));
+	buildlst(forks, ft_atoi(av[1]));
 	pthread_mutex_init(&mt1, NULL);
 	pthread_mutex_init(&mt2, NULL);
+	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
 		a = malloc(sizeof (t_philo));
 		a->mt = malloc(sizeof(pthread_mutex_t));
+		a->x = NULL;
+		a->x = get_item(*ctr, i, flag);
 		a->esq = NULL;
 		a->dir = NULL;
-		a->esq = getfork(*forks, i);
+		a->esq = get_item(*forks, i, 42);
 		if (i == ft_atoi(av[1]) - 1)
-			a->dir = getfork(*forks, 0);
+			a->dir = get_item(*forks, 0, 42);
 		else
-			a->dir = getfork(*forks, i + 1);
+			a->dir = get_item(*forks, i + 1, 42);
 		a->ind = malloc(sizeof (int));
 		a->args = av;
 		*a->ind = i;

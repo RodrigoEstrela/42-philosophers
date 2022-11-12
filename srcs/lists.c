@@ -1,6 +1,6 @@
 # include "../inc/philo.h"
 
-void	ft_lstfront(t_forks **lst, t_forks *new)
+void	ft_lstfront(t_lst **lst, t_lst *new)
 {
 	if (!lst || !new)
 		return ;
@@ -8,9 +8,9 @@ void	ft_lstfront(t_forks **lst, t_forks *new)
 	*lst = new;
 }
 
-void	ft_lstadd_back(t_forks **lst, t_forks *new)
+void	ft_lstadd_back(t_lst **lst, t_lst *new)
 {
-	t_forks *tmp;
+	t_lst *tmp;
 
 	if (!*lst)
 	{
@@ -24,14 +24,14 @@ void	ft_lstadd_back(t_forks **lst, t_forks *new)
 	tmp->next = new;
 }
 
-t_forks *ft_lstnew(int *content)
+t_lst *ft_lstnew(int *content)
 {
-	t_forks *new;
+	t_lst *new;
 
-	new = malloc(sizeof(t_forks));
+	new = malloc(sizeof(t_lst));
 	if (!new)
 		return (NULL);
-	new->fork = content;
+	new->q = content;
 	new->next = NULL;
 	return (new);
 }
