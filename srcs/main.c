@@ -63,27 +63,6 @@ void *fThread_Timer(void *forks)
 	free(t1);
 }
 
-int eatcounter(t_master *m, int n_philos)
-{
-	int i;
-	int ctr;
-
-	i = 0;
-	ctr = 0;
-	if (*m->flag == -1)
-		return (0);
-	while (i < n_philos)
-	{
-		if (*m->b[i]->x >= *m->flag)
-			ctr++;
-		i++;
-	}
-	if (ctr == ft_atoi(m->b[0]->args[5]))
-		return (1);
-	else
-		return (0);
-}
-
 void	*fThread(void *m)
 {
 	int c;
@@ -94,6 +73,7 @@ void	*fThread(void *m)
 	static int k;
 	static int deathchecker;
 	static int eatchecker;
+	int eattimes;
 
 	k = 0;
 	pthread_mutex_lock(((t_master *) m)->mt3);
@@ -109,7 +89,11 @@ void	*fThread(void *m)
 	eat_time = get_time(start);
 	deathchecker = 0;
 	eatchecker = 0;
-	while (deathchecker != 1 && eatchecker < (ft_atoi(a->args[5]) * k))//&& eatcounter((t_master *) m, k) != 1)
+	if (a->args[5])
+		eattimes = ft_atoi(a->args[5]);
+	else
+		eattimes = -1;
+	while (deathchecker != 1 && (eattimes == -1 || eatchecker < eattimes * k))
 	{
 		if (!me_nao_dead(((t_philo *) a)->args[2], eat_time, start) && deathchecker != 1)
 		{
@@ -123,7 +107,7 @@ void	*fThread(void *m)
 				pthread_mutex_unlock(((t_master *) m)->mt1);
 				printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c);
 				usleep(ft_atoi(a->args[3]) * 1000);
-				if (a->args[5])
+				if (eattimes != -1)
 					eatchecker++;
 				pthread_mutex_lock(((t_master *) m)->mt2);
 				*a->esq->q = 1;
@@ -153,7 +137,6 @@ void	*fThread(void *m)
 			deathchecker = 1;
 		}
 	}
-	usleep(100000);
 	if (*a->status == 1)
 		printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
 	free(a);
@@ -180,12 +163,6 @@ int main(int ac, char **av)
 	pthread_mutex_init(m->mt2, NULL);
 	m->mt3 = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(m->mt3, NULL);
-	m->mt4 = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(m->mt4, NULL);
-	m->flag = malloc(sizeof(int));
-	*m->flag = -1;
-	if (ac == 6)
-		*m->flag = ft_atoi(av[5]);
 	m->b = malloc(sizeof(t_philo) * ft_atoi(av[1]) + 1);
 	i = 1;
 	while (i <= ft_atoi(av[1]))
@@ -203,8 +180,6 @@ int main(int ac, char **av)
 		a->args = av;
 		a->status = malloc(sizeof(int));
 		*a->status = 0;
-		a->x = malloc(sizeof(int));
-		*a->x = 0;
 		m->b[i - 1] = malloc(sizeof(t_philo));
 		m->b[i - 1] = a;
 		i++;
