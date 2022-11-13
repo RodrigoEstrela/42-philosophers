@@ -18,7 +18,7 @@
 # define YELLOW "\033[0;33m"
 // philo is sleeping
 # define CYAN "\033[0;36m"
-// timer
+// timestamp
 # define PURPLE "\033[0;35m"
 # define RESET "\033[0m"
 
@@ -33,6 +33,7 @@ typedef struct s_philo{
 	t_lst 		*esq;
 	t_lst 		*dir;
 	int			*phn;
+	int 		*status;
 }					t_philo;
 
 typedef struct s_master{
@@ -41,7 +42,9 @@ typedef struct s_master{
 	pthread_mutex_t	*mt1;
 	pthread_mutex_t *mt2;
 	pthread_mutex_t *mt3;
+	pthread_mutex_t *mt4;
 	t_philo 		**b;
+	pthread_t		th[124535];
 }				t_master;
 
 t_lst	*get_item(t_lst *lst, int index, int flag);

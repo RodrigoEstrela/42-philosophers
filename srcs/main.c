@@ -63,65 +63,86 @@ void *fThread_Timer(void *forks)
 	free(t1);
 }
 
-void	*fThread(void *m)
+int killchecker(t_master *m, int n_philos)
 {
-	int				c;
-	int				sleeping;
-	long long int	eat_time;
-	struct timeval	start;
-	t_philo 		*a;
-	static int 			k;
+	int i;
+
+	i = 0;
+	while (i < n_philos)
+	{
+		if (*m->b[i]->status == 1)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+void	*fThread(void *m) {
+	int c;
+	int sleeping;
+	long long int eat_time;
+	struct timeval start;
+	t_philo *a;
+	static int k;
+	static int deathchecker;
 
 	k = 0;
-	pthread_mutex_lock(((t_master *)m)->mt3);
-	a = (t_philo *)((t_master *)m)->b[k];
+	pthread_mutex_lock(((t_master *) m)->mt3);
+	a = (t_philo *) ((t_master *) m)->b[k];
 	usleep(500 * 1000);
 	k++;
-	pthread_mutex_unlock(((t_master *)m)->mt3);
+	pthread_mutex_unlock(((t_master *) m)->mt3);
 	while (k != ft_atoi(a->args[1]))
 		write(1, "", 0);
 	c = *a->phn;
 	sleeping = 0;
 	gettimeofday(&start, NULL);
 	eat_time = get_time(start);
-	while (!me_nao_dead(((t_philo *)a)->args[2], eat_time, start))
+	deathchecker = 0;
+	while (deathchecker != 1)
 	{
-		pthread_mutex_lock(((t_master *)m)->mt1);
-		if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) != 1)
+		if (!me_nao_dead(((t_philo *) a)->args[2], eat_time, start))
 		{
-			*a->esq->q = 2;
-			printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
-			*a->dir->q = 2;
-			printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
-			eat_time = get_time(start);
-			pthread_mutex_unlock(((t_master *)m)->mt1);
-			printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c);
-			usleep(ft_atoi(a->args[3]) * 1000);
-			if (a->args[5])
-				*a->x->q += 1;
-			pthread_mutex_lock(((t_master *)m)->mt2);
-			*a->esq->q = 1;
-			*a->dir->q = 1;
-			pthread_mutex_unlock(((t_master *)m)->mt2);
-			sleeping = 1;
-		}
-		else if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) == 1)
-		{
-			*a->esq->q = 2;
-			printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
-			pthread_mutex_unlock(((t_master *)m)->mt1);
+			pthread_mutex_lock(((t_master *) m)->mt1);
+			if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) != 1) {
+				*a->esq->q = 2;
+				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
+				*a->dir->q = 2;
+				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
+				eat_time = get_time(start);
+				pthread_mutex_unlock(((t_master *) m)->mt1);
+				printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c);
+				usleep(ft_atoi(a->args[3]) * 1000);
+				if (a->args[5])
+					*a->x->q += 1;
+				pthread_mutex_lock(((t_master *) m)->mt2);
+				*a->esq->q = 1;
+				*a->dir->q = 1;
+				pthread_mutex_unlock(((t_master *) m)->mt2);
+				sleeping = 1;
+			}
+			else if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) == 1)
+			{
+				*a->esq->q = 2;
+				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
+				pthread_mutex_unlock(((t_master *) m)->mt1);
+			}
+			else
+				pthread_mutex_unlock(((t_master *) m)->mt1);
+			if (sleeping == 1 && deathchecker != 1)
+			{
+				printf(PURPLE"%lld ms "CYAN"%d is sleeping\n"RESET, get_time(start), c);
+				usleep(ft_atoi(a->args[4]) * 1000);
+				printf(PURPLE"%lld ms "BLUE"%d is thinking\n"RESET, get_time(start), c);
+				sleeping = 0;
+			}
 		}
 		else
-			pthread_mutex_unlock(((t_master *)m)->mt1);
-		if (sleeping == 1)
 		{
-			printf(PURPLE"%lld ms "CYAN"%d is sleeping\n"RESET, get_time(start), c);
-			usleep(ft_atoi(a->args[4]) * 1000);
-			printf(PURPLE"%lld ms "BLUE"%d is thinking\n"RESET, get_time(start), c);
-			sleeping = 0;
+			printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
+			deathchecker = 1;
 		}
 	}
-	printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
 	free(a);
 	return (NULL);
 }
@@ -129,7 +150,6 @@ void	*fThread(void *m)
 int main(int ac, char **av)
 {
 	int				i;
-	pthread_t		th[124535];
 	int 			flag;
 	t_philo 		*a;
 	t_master 		*m;
@@ -153,6 +173,8 @@ int main(int ac, char **av)
 	pthread_mutex_init(m->mt2, NULL);
 	m->mt3 = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(m->mt3, NULL);
+	m->mt4 = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(m->mt4, NULL);
 	m->b = malloc(sizeof(t_philo) * ft_atoi(av[1]) + 1);
 	i = 1;
 	while (i <= ft_atoi(av[1]))
@@ -170,16 +192,18 @@ int main(int ac, char **av)
 		a->phn = malloc(sizeof(int));
 		*a->phn = i;
 		a->args = av;
+		a->status = malloc(sizeof(int));
+		*a->status = 0;
 		m->b[i - 1] = malloc(sizeof(t_philo));
 		m->b[i - 1] = a;
 		i++;
 	}
 	i = -1;
 	while (++i < ft_atoi(av[1]))
-		pthread_create(&th[i], NULL, fThread, m);
+		pthread_create(&m->th[i], NULL, fThread, m);
 	i = -1;
 	while (++i < ft_atoi(av[1]))
-		pthread_join(th[i], NULL);
+		pthread_join(m->th[i], NULL);
 	pthread_mutex_destroy(m->mt1);
 	pthread_mutex_destroy(m->mt2);
 	pthread_mutex_destroy(m->mt3);
