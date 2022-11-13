@@ -1,20 +1,19 @@
 #include "../inc/philo.h"
 
-void printforks(t_lst *lst)
+void printlst(t_lst *lst)
 {
 	t_lst *tmp;
 
 	tmp = lst;
 	while (tmp)
 	{
-		printf("Fork: %d ", *tmp->q);
-		printf("Address: %p |", tmp->q);
+		printf("Item: %d ", *tmp->q);
 		tmp = tmp->next;
 	}
 	printf("\n");
 }
 
-t_lst *get_item(t_lst *lst, int n, int flag)
+t_lst *get_item(t_lst *lst, int index, int flag)
 {
 	int		i;
 	t_lst	*tmp;
@@ -23,7 +22,7 @@ t_lst *get_item(t_lst *lst, int n, int flag)
 		return	NULL;
 	i = 0;
 	tmp = lst;
-	while (i < n)
+	while (i < index)
 	{
 		tmp = tmp->next;
 		i++;
@@ -31,20 +30,20 @@ t_lst *get_item(t_lst *lst, int n, int flag)
 	return (tmp);
 }
 
-void buildlst(t_lst **lst, int n)
+void buildlst(t_lst **lst, int size, int cnt)
 {
 	int i;
 	int *content;
 
 	i = 1;
 	content = malloc(sizeof(int));
-	*content = 1;
+	*content = cnt;
 	*lst = NULL;
 	ft_lstfront(lst, ft_lstnew(content));
-	while (i < n)
+	while (i < size)
 	{
 		content = malloc(sizeof(int));
-		*content = 1;
+		*content = cnt;
 		ft_lstadd_back(lst, ft_lstnew(content));
 		i++;
 	}

@@ -27,24 +27,32 @@ typedef struct		s_lst {
 	struct s_lst	*next;
 } 					t_lst;
 
-
 typedef struct s_philo{
 	char		**args;
-	int			*ind;
 	t_lst		*x;
 	t_lst 		*esq;
 	t_lst 		*dir;
-	pthread_mutex_t	*mt;
+	int			*phn;
 }					t_philo;
 
-t_lst	*get_item(t_lst *lst, int n, int flag);
-void	buildlst(t_lst **lst, int n);
+typedef struct s_master{
+	t_lst			**forks;
+	t_lst			**ctr;
+	pthread_mutex_t	*mt1;
+	pthread_mutex_t *mt2;
+	pthread_mutex_t *mt3;
+	t_philo 		**b;
+}				t_master;
+
+t_lst	*get_item(t_lst *lst, int index, int flag);
+void	buildlst(t_lst **lst, int n, int cnt);
 t_lst	*ft_lstnew(int *content);
 void	ft_lstadd_back(t_lst **lst, t_lst *new);
 void	ft_lstfront(t_lst **lst, t_lst *new);
 void	*fThread_Timer(void *forks);
 
-void	printforks(t_lst *lst);
+void	printlst(t_lst *lst);
+void	printarr(int *arr, int size);
 void	crono_thread(t_lst **forks);
 
 #endif
