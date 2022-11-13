@@ -63,21 +63,29 @@ void *fThread_Timer(void *forks)
 	free(t1);
 }
 
-int killchecker(t_master *m, int n_philos)
+int eatcounter(t_master *m, int n_philos)
 {
 	int i;
+	int ctr;
 
 	i = 0;
+	ctr = 0;
+	if (*m->flag == -1)
+		return (0);
 	while (i < n_philos)
 	{
-		if (*m->b[i]->status == 1)
-			return (1);
+		if (*m->b[i]->x >= *m->flag)
+			ctr++;
 		i++;
 	}
-	return (0);
+	if (ctr == ft_atoi(m->b[0]->args[5]))
+		return (1);
+	else
+		return (0);
 }
 
-void	*fThread(void *m) {
+void	*fThread(void *m)
+{
 	int c;
 	int sleeping;
 	long long int eat_time;
@@ -85,6 +93,7 @@ void	*fThread(void *m) {
 	t_philo *a;
 	static int k;
 	static int deathchecker;
+	static int eatchecker;
 
 	k = 0;
 	pthread_mutex_lock(((t_master *) m)->mt3);
@@ -99,12 +108,13 @@ void	*fThread(void *m) {
 	gettimeofday(&start, NULL);
 	eat_time = get_time(start);
 	deathchecker = 0;
-	while (deathchecker != 1)
+	eatchecker = 0;
+	while (deathchecker != 1 && eatchecker < (ft_atoi(a->args[5]) * k))//&& eatcounter((t_master *) m, k) != 1)
 	{
-		if (!me_nao_dead(((t_philo *) a)->args[2], eat_time, start))
+		if (!me_nao_dead(((t_philo *) a)->args[2], eat_time, start) && deathchecker != 1)
 		{
 			pthread_mutex_lock(((t_master *) m)->mt1);
-			if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) != 1) {
+			if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) != 1 && deathchecker != 1) {
 				*a->esq->q = 2;
 				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
 				*a->dir->q = 2;
@@ -114,14 +124,14 @@ void	*fThread(void *m) {
 				printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c);
 				usleep(ft_atoi(a->args[3]) * 1000);
 				if (a->args[5])
-					*a->x->q += 1;
+					eatchecker++;
 				pthread_mutex_lock(((t_master *) m)->mt2);
 				*a->esq->q = 1;
 				*a->dir->q = 1;
 				pthread_mutex_unlock(((t_master *) m)->mt2);
 				sleeping = 1;
 			}
-			else if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) == 1)
+			else if (*a->esq->q == 1 && *a->dir->q == 1 && ft_atoi(a->args[1]) == 1 && deathchecker != 1)
 			{
 				*a->esq->q = 2;
 				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
@@ -139,10 +149,13 @@ void	*fThread(void *m) {
 		}
 		else
 		{
-			printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
+			*a->status = 1;
 			deathchecker = 1;
 		}
 	}
+	usleep(100000);
+	if (*a->status == 1)
+		printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
 	free(a);
 	return (NULL);
 }
@@ -150,7 +163,6 @@ void	*fThread(void *m) {
 int main(int ac, char **av)
 {
 	int				i;
-	int 			flag;
 	t_philo 		*a;
 	t_master 		*m;
 
@@ -159,12 +171,7 @@ int main(int ac, char **av)
 		printf("Error: wrong number of arguments\n");
 		return (0);
 	}
-	flag = 0;
-	if (ac == 6)
-		flag = 1;
 	m = malloc(sizeof(t_master));
-	m->ctr = malloc(sizeof(t_lst *));
-	buildlst(m->ctr, ft_atoi(av[1]), 0);
 	m->forks = malloc(sizeof(t_lst *));
 	buildlst(m->forks, ft_atoi(av[1]), 1);
 	m->mt1 = malloc(sizeof(pthread_mutex_t));
@@ -175,13 +182,15 @@ int main(int ac, char **av)
 	pthread_mutex_init(m->mt3, NULL);
 	m->mt4 = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(m->mt4, NULL);
+	m->flag = malloc(sizeof(int));
+	*m->flag = -1;
+	if (ac == 6)
+		*m->flag = ft_atoi(av[5]);
 	m->b = malloc(sizeof(t_philo) * ft_atoi(av[1]) + 1);
 	i = 1;
 	while (i <= ft_atoi(av[1]))
 	{
 		a = malloc(sizeof (t_philo));
-		a->x = NULL;
-		a->x = get_item(*m->ctr, i - 1, flag);
 		a->esq = NULL;
 		a->dir = NULL;
 		a->esq = get_item(*m->forks, i - 1, 42);
@@ -194,6 +203,8 @@ int main(int ac, char **av)
 		a->args = av;
 		a->status = malloc(sizeof(int));
 		*a->status = 0;
+		a->x = malloc(sizeof(int));
+		*a->x = 0;
 		m->b[i - 1] = malloc(sizeof(t_philo));
 		m->b[i - 1] = a;
 		i++;
@@ -208,7 +219,6 @@ int main(int ac, char **av)
 	pthread_mutex_destroy(m->mt2);
 	pthread_mutex_destroy(m->mt3);
 	free(m->b);
-	free(m->ctr);
 	free(m->forks);
 	free(m);
 	return (0);

@@ -29,22 +29,22 @@ typedef struct		s_lst {
 
 typedef struct s_philo{
 	char		**args;
-	t_lst		*x;
 	t_lst 		*esq;
 	t_lst 		*dir;
 	int			*phn;
 	int 		*status;
+	int 		*x;
 }					t_philo;
 
 typedef struct s_master{
 	t_lst			**forks;
-	t_lst			**ctr;
 	pthread_mutex_t	*mt1;
 	pthread_mutex_t *mt2;
 	pthread_mutex_t *mt3;
 	pthread_mutex_t *mt4;
 	t_philo 		**b;
 	pthread_t		th[124535];
+	int 			*flag;
 }				t_master;
 
 t_lst	*get_item(t_lst *lst, int index, int flag);
