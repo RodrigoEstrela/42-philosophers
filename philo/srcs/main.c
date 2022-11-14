@@ -1,84 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PHILOSOPHERS                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rdas-nev <rdas-nev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 4242/42/42 42:42:42 by rdas-nev          #+#    #+#             */
+/*   Updated: 4242/42/42 42:42:42 by rdas-nev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/philo.h"
 
-int ft_atoi(const char *str)
+void	*f_thread(void *m)
 {
-	int i;
-	int res;
-
-	i = 0;
-	res = 0;
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		res = res * 10 + str[i] - '0';
-		i++;
-	}
-	return (res);
-}
-
-long long int seconds_to_miliseconds(struct timeval t)
-{
-	long long int res;
-
-	res = t.tv_sec * 1000;
-	res += t.tv_usec / 1000;
-	return (res);
-}
-
-long long int get_time(struct timeval start)
-{
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000) - seconds_to_miliseconds(start));
-}
-
-int	me_dead(char *die_time, long long int eat_time, struct timeval start)
-{
-	if (get_time(start)	 - eat_time >= ft_atoi(die_time))
-		return (1);
-	return (0);
-}
-
-void *fThread_Timer(void *forks)
-{
-	struct timeval *t1;
-	struct timeval *starttime;
-	long long int time;
-
-	(void)forks;
-	t1 = malloc(sizeof(struct timeval));
-	starttime = malloc(sizeof(struct timeval));
-	gettimeofday(starttime, NULL);
-	printf("Timer started %ld\n", starttime->tv_usec / 1000);
-	long long int start = starttime->tv_sec * 1000 + (starttime->tv_usec / 1000);
-	while (1)
-	{
-		usleep(100000);
-		gettimeofday(t1, NULL);
-		time = t1->tv_sec * 1000 + (t1->tv_usec / 1000);
-		printf("Time: %lld\n", time - start);
-//		printforks(*(t_forks **)forks);
-//		printf("###########################\n");
-	}
-	free(t1);
-}
-
-void	*fThread(void *m)
-{
-	int c;
-	int sleeping;
-	long long int eat_time;
-	long long int sleep_time;
-	struct timeval start;
-	t_philo *a;
-	static int k;
-	static int deathchecker;
-	static int eatchecker;
-	int eattimes;
+	int				c;
+	int				sleeping;
+	long long int	eat_time;
+	long long int	sleep_time;
+	struct timeval	start;
+	t_philo			*a;
+	static int		k;
+	static int		deathchecker;
+	static int		eatchecker;
+	int				eattimes;
 
 	k = 0;
 	pthread_mutex_lock(((t_master *) m)->mt3);
-	a = (t_philo *) ((t_master *) m)->b[k];
+	a = (t_philo *)((t_master *) m)->b[k];
 	usleep(500 * 1000);
 	k++;
 	pthread_mutex_unlock(((t_master *) m)->mt3);
@@ -141,7 +90,6 @@ void	*fThread(void *m)
 						free(a);
 						return (NULL);
 					}
-
 				}
 				printf(PURPLE"%lld ms "BLUE"%d is thinking\n"RESET, get_time(start), c);
 				sleeping = 0;
@@ -153,20 +101,19 @@ void	*fThread(void *m)
 			deathchecker = 1;
 		}
 	}
-	if (*a->status == 1) {
+	if (*a->status == 1)
 		printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
-	}
 	free(a->status);
 	free(a->phn);
 	free(a);
 	return (NULL);
 }
 
-int main(int ac, char **av)
+int	main(int ac, char **av)
 {
-	int				i;
-	t_philo 		*a;
-	t_master 		*m;
+	int			i;
+	t_philo		*a;
+	t_master	*m;
 
 	if (!(ac == 5 || ac == 6))
 	{
@@ -204,7 +151,7 @@ int main(int ac, char **av)
 	}
 	i = -1;
 	while (++i < ft_atoi(av[1]))
-		pthread_create(&m->th[i], NULL, fThread, m);
+		pthread_create(&m->th[i], NULL, f_thread, m);
 	i = -1;
 	while (++i < ft_atoi(av[1]))
 		pthread_join(m->th[i], NULL);
@@ -215,7 +162,7 @@ int main(int ac, char **av)
 	free(m->mt2);
 	free(m->mt3);
 	free(m->b);
-	deletlist(m->forks);
+	deletelist(m->forks);
 	free(m);
 	return (0);
 }

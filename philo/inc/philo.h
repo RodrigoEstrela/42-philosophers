@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   MINISHELL                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rdas-nev <rdas-nev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 4242/42/42 42:42:42 by rdas-nev          #+#    #+#             */
+/*   Updated: 4242/42/42 42:42:42 by rdas-nev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 
@@ -22,38 +34,41 @@
 # define PURPLE "\033[0;35m"
 # define RESET "\033[0m"
 
-typedef struct		s_lst {
+typedef struct s_lst{
 	int				*q;
 	struct s_lst	*next;
-} 					t_lst;
+}					t_lst;
 
 typedef struct s_philo{
 	char		**args;
-	t_lst 		*esq;
-	t_lst 		*dir;
+	t_lst		*esq;
+	t_lst		*dir;
 	int			*phn;
-	int 		*status;
+	int			*status;
 }					t_philo;
 
 typedef struct s_master{
 	t_lst			**forks;
 	pthread_mutex_t	*mt1;
-	pthread_mutex_t *mt2;
-	pthread_mutex_t *mt3;
-	t_philo 		**b;
+	pthread_mutex_t	*mt2;
+	pthread_mutex_t	*mt3;
+	t_philo			**b;
 	pthread_t		th[124535];
+	int				*ph_n;
+	int				*eat_t;
+	int				*sleep_t;
+	int				*die_t;
 }				t_master;
 
-t_lst	*get_item(t_lst *lst, int index, int flag);
-void	buildlst(t_lst **lst, int n, int cnt);
-t_lst	*ft_lstnew(int *content);
-void	ft_lstadd_back(t_lst **lst, t_lst *new);
-void	ft_lstfront(t_lst **lst, t_lst *new);
-void	*fThread_Timer(void *forks);
-void	deletlist(t_lst **lst);
-
-void	printlst(t_lst *lst);
-void	printarr(int *arr, int size);
-void	crono_thread(t_lst **forks);
+t_lst			*get_item(t_lst *lst, int index, int flag);
+void			buildlst(t_lst **lst, int n, int cnt);
+t_lst			*ft_lstnew(int *content);
+void			ft_lstadd_back(t_lst **lst, t_lst *new);
+void			ft_lstfront(t_lst **lst, t_lst *new);
+void			deletelist(t_lst **lst);
+int				ft_atoi(const char *str);
+long long int	s_to_mil(struct timeval t);
+long long int	get_time(struct timeval start);
+int				me_dead(char *dtime, long long int etime, struct timeval s);
 
 #endif

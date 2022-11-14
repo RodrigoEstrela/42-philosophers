@@ -12,68 +12,26 @@
 
 #include "../inc/philo.h"
 
-t_lst	*get_item(t_lst *lst, int index, int flag)
+long long int	s_to_mil(struct timeval t)
 {
-	int		i;
-	t_lst	*tmp;
+	long long int	res;
 
-	if (flag == 0)
-		return (NULL);
-	i = 0;
-	tmp = lst;
-	while (i < index)
-	{
-		tmp = tmp->next;
-		i++;
-	}
-	return (tmp);
-}
-
-void	buildlst(t_lst **lst, int size, int cnt)
-{
-	int	i;
-	int	*content;
-
-	i = 1;
-	content = malloc(sizeof(int));
-	*content = cnt;
-	*lst = NULL;
-	ft_lstfront(lst, ft_lstnew(content));
-	while (i < size)
-	{
-		content = malloc(sizeof(int));
-		*content = cnt;
-		ft_lstadd_back(lst, ft_lstnew(content));
-		i++;
-	}
-}
-
-void	deletelist(t_lst **lst)
-{
-	t_lst	*tmp;
-
-	tmp = *lst;
-	while (tmp)
-	{
-		*lst = (*lst)->next;
-		free(tmp->q);
-		free(tmp);
-		tmp = *lst;
-	}
-	free(lst);
-}
-
-int	ft_atoi(const char *str)
-{
-	int	i;
-	int	res;
-
-	i = 0;
-	res = 0;
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		res = res * 10 + str[i] - '0';
-		i++;
-	}
+	res = t.tv_sec * 1000;
+	res += t.tv_usec / 1000;
 	return (res);
+}
+
+long long int	get_time(struct timeval start)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000) - s_to_mil(start));
+}
+
+int	me_dead(char *die_time, long long int eat_time, struct timeval start)
+{
+	if (get_time(start) - eat_time >= ft_atoi(die_time))
+		return (1);
+	return (0);
 }
