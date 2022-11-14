@@ -11,7 +11,7 @@
 # ************************************************************************** */
 
 SRCS		=		main.c lists.c utils1.c timefuncs.c \
-
+					check_build_do_destroy.c \
 
 OBJS 		=		$(addprefix objs/,$(SRCS:.c=.o))
 

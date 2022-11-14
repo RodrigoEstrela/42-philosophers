@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MINISHELL                                          :+:      :+:    :+:   */
+/*   PHILOSOPHERS                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdas-nev <rdas-nev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -40,26 +40,28 @@ typedef struct s_lst{
 }					t_lst;
 
 typedef struct s_philo{
-	char		**args;
 	t_lst		*esq;
 	t_lst		*dir;
 	int			*phn;
 	int			*status;
+	int 		*ecnt;
 }					t_philo;
 
-typedef struct s_master{
-	t_lst			**forks;
+typedef struct s_master
+{
 	pthread_mutex_t	*mt1;
 	pthread_mutex_t	*mt2;
 	pthread_mutex_t	*mt3;
-	t_philo			**b;
-	pthread_t		th[124535];
 	int				*ph_n;
+	int				*die_t;
 	int				*eat_t;
 	int				*sleep_t;
-	int				*die_t;
+	t_lst			**forks;
+	t_philo			**b;
+	pthread_t		th[124535];
 }				t_master;
 
+void			*f_thread(void *m);
 t_lst			*get_item(t_lst *lst, int index, int flag);
 void			buildlst(t_lst **lst, int n, int cnt);
 t_lst			*ft_lstnew(int *content);
@@ -67,8 +69,11 @@ void			ft_lstadd_back(t_lst **lst, t_lst *new);
 void			ft_lstfront(t_lst **lst, t_lst *new);
 void			deletelist(t_lst **lst);
 int				ft_atoi(const char *str);
-long long int	s_to_mil(struct timeval t);
 long long int	get_time(struct timeval start);
-int				me_dead(char *dtime, long long int etime, struct timeval s);
-
+int				me_dead(int dtime, long long int etime, struct timeval s);
+int				ft_isnumber(const char *str);
+int				inputcheck(int ac, char **av);
+void			masterbuilder(t_master *m, char **av);
+void			threaddoer(t_master *m, char **av);
+void			masterdestroyer(t_master *m);
 #endif

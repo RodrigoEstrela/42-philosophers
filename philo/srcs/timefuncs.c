@@ -29,9 +29,9 @@ long long int	get_time(struct timeval start)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000) - s_to_mil(start));
 }
 
-int	me_dead(char *die_time, long long int eat_time, struct timeval start)
+int	me_dead(int die_time, long long int eat_time, struct timeval start)
 {
-	if (get_time(start) - eat_time >= ft_atoi(die_time))
+	if (get_time(start) - eat_time >= die_time)
 		return (1);
 	return (0);
 }
