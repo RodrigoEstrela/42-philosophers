@@ -21,18 +21,18 @@
 # include <sys/time.h>
 
 // philo is thinking
-# define BLUE "\033[0;34m"
+# define B "\033[0;34m"
 // philo died
-# define RED "\033[1;31m"
+# define R "\033[1;31m"
 // philo is eating
-# define GREEN "\033[0;32m"
+# define G "\033[0;32m"
 // philo has taken a fork
-# define YELLOW "\033[0;33m"
+# define Y "\033[0;33m"
 // philo is sleeping
-# define CYAN "\033[0;36m"
+# define C "\033[0;36m"
 // timestamp
-# define PURPLE "\033[0;35m"
-# define RESET "\033[0m"
+# define P "\033[0;35m"
+# define RE "\033[0m"
 
 typedef struct s_lst{
 	int				*q;
@@ -40,11 +40,11 @@ typedef struct s_lst{
 }					t_lst;
 
 typedef struct s_philo{
-	t_lst		*esq;
-	t_lst		*dir;
+	t_lst		*e;
+	t_lst		*d;
 	int			*phn;
 	int			*status;
-	int 		*ecnt;
+	int			*ecnt;
 }					t_philo;
 
 typedef struct s_master
@@ -59,7 +59,7 @@ typedef struct s_master
 	t_lst			**forks;
 	t_philo			**b;
 	pthread_t		th[124535];
-}				t_master;
+}						t_m;
 
 void			*f_thread(void *m);
 t_lst			*get_item(t_lst *lst, int index, int flag);
@@ -73,7 +73,7 @@ long long int	get_time(struct timeval start);
 int				me_dead(int dtime, long long int etime, struct timeval s);
 int				ft_isnumber(const char *str);
 int				inputcheck(int ac, char **av);
-void			masterbuilder(t_master *m, char **av);
-void			threaddoer(t_master *m, char **av);
-void			masterdestroyer(t_master *m);
+void			masterbuilder(t_m *m, char **av);
+void			threaddoer(t_m *m, char **av);
+void			masterdestroyer(t_m *m);
 #endif

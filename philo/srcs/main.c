@@ -12,107 +12,120 @@
 
 #include "../inc/philo.h"
 
+// int array
+// 0: philo number
+// 1: sleeping or not
+// //////////////////
+// long long int array
+// 0: time of last eat
+// 1: time of last sleep
+// //////////////////
+// static int array
+// 0: thread init check
+// 1: death checker
+// 2: eat counter
 void	*f_thread(void *m)
 {
-	int				c;
-	int				sleeping;
-	long long int	eat_time;
-	long long int	sleep_time;
+	int				*i;
+	long long int	*li;
+	static int		*si;
 	struct timeval	start;
 	t_philo			*a;
-	static int		ichk;
-	static int		dchk;
-	static int		echk;
 
-	ichk = 0;
-	pthread_mutex_lock(((t_master *) m)->mt3);
-	a = (t_philo *)((t_master *) m)->b[ichk];
+	si = (int [3]){0, 0, 0};
+	li = (long long int [2]){0, 0};
+	si[0] = 0;
+	pthread_mutex_lock(((t_m *) m)->mt3);
+	a = (t_philo *)((t_m *) m)->b[si[0]];
 	usleep(500 * 1000);
-	ichk++;
-	pthread_mutex_unlock(((t_master *) m)->mt3);
-	while (ichk != *(((t_master *) m)->ph_n))
+	si[0] += 1;
+	pthread_mutex_unlock(((t_m *) m)->mt3);
+	while (si[0] != *(((t_m *) m)->ph_n))
 		;
-	c = *a->phn;
-	sleeping = 0;
+	i = (int [2]){0, 0};
+	i[0] = *a->phn;
+	i[1] = 0;
 	gettimeofday(&start, NULL);
-	eat_time = get_time(start);
-	dchk = 0;
-	echk = 0;
-	while (dchk != 1 && (*a->ecnt == -1 || echk < *a->ecnt * ichk))
+	li[0] = get_time(start);
+	si[1] = 0;
+	si[2] = 0;
+	while (si[1] != 1 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
 	{
-		if (!me_dead(*((t_master *)m)->die_t, eat_time, start))
+		if (!me_dead(*((t_m *)m)->die_t, li[0], start))
 		{
-			pthread_mutex_lock(((t_master *) m)->mt1);
-			if (*a->esq->q == 1 && *a->dir->q == 1 && *((t_master *)m)->ph_n != 1)
+			pthread_mutex_lock(((t_m *) m)->mt1);
+			if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n != 1)
 			{
-				*a->esq->q = 2;
-				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
-				*a->dir->q = 2;
-				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
-				eat_time = get_time(start);
-				pthread_mutex_unlock(((t_master *) m)->mt1);
-				printf(PURPLE"%lld ms "GREEN"%d is eating\n"RESET, get_time(start), c);
-				usleep(*((t_master *)m)->eat_t * 1000);
+				*a->e->q = 2;
+				printf(P"%lld ms "Y"%d has taken a fork\n", get_time(start), i[0]);
+				*a->d->q = 2;
+				printf(P"%lld ms "Y"%d has taken a fork\n", get_time(start), i[0]);
+				li[0] = get_time(start);
+				pthread_mutex_unlock(((t_m *) m)->mt1);
+				printf(P"%lld ms "G"%d is eating\n", get_time(start), i[0]);
+				usleep(*((t_m *)m)->eat_t * 1000);
 				if (*a->ecnt != -1)
-					echk++;
-				pthread_mutex_lock(((t_master *) m)->mt2);
-				*a->esq->q = 1;
-				*a->dir->q = 1;
-				pthread_mutex_unlock(((t_master *) m)->mt2);
-				sleeping = 1;
+					si[2] += 1;
+				pthread_mutex_lock(((t_m *) m)->mt2);
+				*a->e->q = 1;
+				*a->d->q = 1;
+				pthread_mutex_unlock(((t_m *) m)->mt2);
+				i[1] = 1;
 			}
-			else if (*a->esq->q == 1 && *a->dir->q == 1 && *((t_master *)m)->ph_n == 1)
+			else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n == 1)
 			{
-				*a->esq->q = 2;
-				printf(PURPLE"%lld ms "YELLOW"%d has taken a fork\n"RESET, get_time(start), c);
-				pthread_mutex_unlock(((t_master *) m)->mt1);
+				*a->e->q = 2;
+				printf(P"%lld ms "Y"%d has taken a fork\n", get_time(start), i[0]);
+				pthread_mutex_unlock(((t_m *) m)->mt1);
 			}
 			else
-				pthread_mutex_unlock(((t_master *) m)->mt1);
-			if (sleeping == 1 && dchk != 1)
+				pthread_mutex_unlock(((t_m *) m)->mt1);
+			if (i[1] == 1 && si[1] != 1)
 			{
-				printf(PURPLE"%lld ms "CYAN"%d is sleeping\n"RESET, get_time(start), c);
-				sleep_time = get_time(start);
-				while (get_time(start) - sleep_time <= *((t_master *)m)->eat_t)
+				printf(P"%lld ms "C"%d is sleeping\n", get_time(start), i[0]);
+				li[1] = get_time(start);
+				while (get_time(start) - li[1] <= *((t_m *)m)->eat_t)
 				{
-					if (me_dead(*((t_master *)m)->die_t, eat_time, start))
+					if (me_dead(*((t_m *)m)->die_t, li[0], start))
 					{
-						printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
+						printf(P"%lld ms "R"%d died\n", get_time(start), i[0]);
 						*a->status = 1;
-						dchk = 1;
+						si[1] = 1;
 						free(a->status);
 						free(a->phn);
+						free(a->ecnt);
 						free(a);
 						return (NULL);
 					}
 				}
-				printf(PURPLE"%lld ms "BLUE"%d is thinking\n"RESET, get_time(start), c);
-				sleeping = 0;
+				printf(P"%lld ms "B"%d is thinking\n", get_time(start), i[0]);
+				i[1] = 0;
 			}
 		}
 		else
 		{
 			*a->status = 1;
-			dchk = 1;
+			si[1] = 1;
 		}
 	}
 	if (*a->status == 1)
-		printf(PURPLE"%lld ms "RED"%d died\n"RESET, get_time(start), c);
+		printf(P"%lld ms "R"%d died\n"RE, get_time(start), i[0]);
 	free(a->status);
 	free(a->phn);
+	free(a->ecnt);
 	free(a);
 	return (NULL);
 }
 
 int	main(int ac, char **av)
 {
-	t_master	*m;
+	t_m	*m;
 
 	if (inputcheck(ac, av) == 1)
 		return (1);
 	else
 	{
-		m = malloc(sizeof(t_master));
+		m = malloc(sizeof(t_m));
 		masterbuilder(m, av);
 		threaddoer(m, av);
 		masterdestroyer(m);

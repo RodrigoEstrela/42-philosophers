@@ -15,7 +15,7 @@ SRCS		=		main.c lists.c utils1.c timefuncs.c \
 
 OBJS 		=		$(addprefix objs/,$(SRCS:.c=.o))
 
-CFLAGS		=		-g -Wall -Wextra -Werror
+CFLAGS		=		-g -Wall -Wextra -Werror -fsanitize=address
 RM			=		rm -f
 
 NAME		= 		philo

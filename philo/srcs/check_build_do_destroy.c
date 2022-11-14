@@ -33,7 +33,7 @@ int	inputcheck(int ac, char **av)
 	return (0);
 }
 
-void	masterbuilder(t_master *m, char **av)
+void	masterbuilder(t_m *m, char **av)
 {
 	m->mt1 = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(m->mt1, NULL);
@@ -54,18 +54,18 @@ void	masterbuilder(t_master *m, char **av)
 	m->b = malloc(sizeof(t_philo) * *m->ph_n);
 }
 
-void	philobuilder(t_master *m, int i, char **av)
+void	philobuilder(t_m *m, int i, char **av)
 {
 	t_philo		*a;
 
 	a = malloc(sizeof (t_philo));
-	a->esq = NULL;
-	a->dir = NULL;
-	a->esq = get_item(*m->forks, i - 1, 42);
+	a->e = NULL;
+	a->d = NULL;
+	a->e = get_item(*m->forks, i - 1, 42);
 	if (i == *m->ph_n)
-		a->dir = get_item(*m->forks, 0, 42);
+		a->d = get_item(*m->forks, 0, 42);
 	else
-		a->dir = get_item(*m->forks, i, 42);
+		a->d = get_item(*m->forks, i, 42);
 	a->phn = malloc(sizeof(int));
 	*a->phn = i;
 	a->ecnt = malloc(sizeof(int));
@@ -78,7 +78,7 @@ void	philobuilder(t_master *m, int i, char **av)
 	m->b[i - 1] = a;
 }
 
-void	threaddoer(t_master *m, char **av)
+void	threaddoer(t_m *m, char **av)
 {
 	int	i;
 
@@ -93,7 +93,7 @@ void	threaddoer(t_master *m, char **av)
 		pthread_join(m->th[i], NULL);
 }
 
-void	masterdestroyer(t_master *m)
+void	masterdestroyer(t_m *m)
 {
 	pthread_mutex_destroy(m->mt1);
 	pthread_mutex_destroy(m->mt2);
