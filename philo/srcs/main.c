@@ -29,7 +29,7 @@ void	*f_thread(void *m)
 	int				*i;
 	long long int	*li;
 	static int		*si;
-	struct timeval	start;
+	struct timeval	s;
 	t_philo			*a;
 
 	si = (int [3]){0, 0, 0};
@@ -45,60 +45,51 @@ void	*f_thread(void *m)
 		;
 	i[0] = *a->phn;
 	i[1] = 0;
-	gettimeofday(&start, NULL);
-	li[0] = gt(start);
+	gettimeofday(&s, NULL);
+	li[0] = gt(s);
 	si[1] = 0;
 	si[2] = 0;
 	while (si[1] != 1 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
 	{
-		if (!me_dead(*((t_m *)m)->die_t, li[0], start))
+		if (!me_dead(*((t_m *)m)->die_t, li[0], s))
 		{
 			pthread_mutex_lock(((t_m *) m)->mt1);
 			if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n != 1)
 			{
-				*a->e->q = 2;
-				printf(P"%lld ms "Y"%d has taken a fork\n", gt(start), i[0]);
-				*a->d->q = 2;
-				printf(P"%lld ms "Y"%d has taken a fork\n", gt(start), i[0]);
-				li[0] = gt(start);
+				forkaction(a, gt(s), i[0], 0);
+				li[0] = gt(s);
 				pthread_mutex_unlock(((t_m *) m)->mt1);
-				printf(P"%lld ms "G"%d is eating\n", gt(start), i[0]);
+				printf(P"%lld ms "G"%d is eating\n", gt(s), i[0]);
 				usleep(*((t_m *)m)->eat_t * 1000);
 				if (*a->ecnt != -1)
 					si[2] += 1;
 				pthread_mutex_lock(((t_m *) m)->mt2);
-				*a->e->q = 1;
-				*a->d->q = 1;
+				forkaction(a, gt(s), i[0], 2);
 				pthread_mutex_unlock(((t_m *) m)->mt2);
 				i[1] = 1;
 			}
 			else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n == 1)
 			{
-				*a->e->q = 2;
-				printf(P"%lld ms "Y"%d has taken a fork\n", gt(start), i[0]);
+				forkaction(a, gt(s), i[0], 1);
 				pthread_mutex_unlock(((t_m *) m)->mt1);
 			}
 			else
 				pthread_mutex_unlock(((t_m *) m)->mt1);
 			if (i[1] == 1 && si[1] != 1)
 			{
-				printf(P"%lld ms "C"%d is sleeping\n", gt(start), i[0]);
-				li[1] = gt(start);
-				while (gt(start) - li[1] <= *((t_m *)m)->sleep_t)
+				printf(P"%lld ms "C"%d is sleeping\n", gt(s), i[0]);
+				li[1] = gt(s);
+				while (gt(s) - li[1] <= *((t_m *)m)->sleep_t)
 				{
-					if (me_dead(*((t_m *)m)->die_t, li[0], start))
+					if (me_dead(*((t_m *)m)->die_t, li[0], s))
 					{
-						printf(P"%lld ms "R"%d died\n", gt(start), i[0]);
+						printf(P"%lld ms "R"%d died\n", gt(s), i[0]);
 						*a->status = 1;
 						si[1] = 1;
-						free(a->status);
-						free(a->phn);
-						free(a->ecnt);
-						free(a);
-						return (NULL);
+						break ;
 					}
 				}
-				printf(P"%lld ms "B"%d is thinking\n", gt(start), i[0]);
+				printf(P"%lld ms "B"%d is thinking\n", gt(s), i[0]);
 				i[1] = 0;
 			}
 		}
@@ -108,12 +99,7 @@ void	*f_thread(void *m)
 			si[1] = 1;
 		}
 	}
-	if (*a->status == 1)
-		printf(P"%lld ms "R"%d died\n"RE, gt(start), i[0]);
-	free(a->status);
-	free(a->phn);
-	free(a->ecnt);
-	free(a);
+	endthread(a, gt(s), i[0]);
 	return (NULL);
 }
 

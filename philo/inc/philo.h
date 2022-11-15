@@ -76,4 +76,7 @@ int				inputcheck(int ac, char **av);
 void			masterbuilder(t_m *m, char **av);
 void			threaddoer(t_m *m, char **av);
 void			masterdestroyer(t_m *m);
+void			forkaction(t_philo *a, long long int t, int i, int flag);
+void			endthread(t_philo *a, long long int t, int i);
+
 #endif
