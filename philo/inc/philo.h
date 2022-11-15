@@ -76,7 +76,11 @@ int				inputcheck(int ac, char **av);
 void			masterbuilder(t_m *m, char **av);
 void			threaddoer(t_m *m, char **av);
 void			masterdestroyer(t_m *m);
-void			forkaction(t_philo *a, long long int t, int i, int flag);
+void			forkaction(t_philo *a, long long int t, int i, t_m *m);
 void			endthread(t_philo *a, long long int t, int i);
+int				philodied(t_philo *a, long long int t, int i, int flag);
+int				eat(t_philo *a, t_m *m, struct timeval s, int *i);
+int				ate_alltimes(t_philo *a);
+void			init_thread(t_m *m);
 
 #endif
