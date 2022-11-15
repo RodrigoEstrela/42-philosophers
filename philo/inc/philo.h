@@ -69,7 +69,7 @@ void			ft_lstadd_back(t_lst **lst, t_lst *new);
 void			ft_lstfront(t_lst **lst, t_lst *new);
 void			deletelist(t_lst **lst);
 int				ft_atoi(const char *str);
-long long int	get_time(struct timeval start);
+long long int	gt(struct timeval start);
 int				me_dead(int dtime, long long int etime, struct timeval s);
 int				ft_isnumber(const char *str);
 int				inputcheck(int ac, char **av);

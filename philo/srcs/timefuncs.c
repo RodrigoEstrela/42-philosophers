@@ -21,7 +21,7 @@ long long int	s_to_mil(struct timeval t)
 	return (res);
 }
 
-long long int	get_time(struct timeval start)
+long long int	gt(struct timeval start)
 {
 	struct timeval	tv;
 
@@ -31,7 +31,7 @@ long long int	get_time(struct timeval start)
 
 int	me_dead(int die_time, long long int eat_time, struct timeval start)
 {
-	if (get_time(start) - eat_time >= die_time)
+	if (gt(start) - eat_time >= die_time)
 		return (1);
 	return (0);
 }
