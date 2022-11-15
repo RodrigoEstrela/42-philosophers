@@ -80,7 +80,6 @@ void			forkaction(t_philo *a, long long int t, int i, t_m *m);
 void			endthread(t_philo *a, long long int t, int i);
 int				philodied(t_philo *a, long long int t, int i, int flag);
 int				eat(t_philo *a, t_m *m, struct timeval s, int *i);
-int				ate_alltimes(t_philo *a);
 void			init_thread(t_m *m);
 
 #endif

@@ -65,7 +65,6 @@ void	*f_thread(void *m)
 					if (me_dead(*((t_m *)m)->die_t, li[0], s))
 					{
 						si[1] = philodied(a, gt(s), i[0], 1);
-						printf("number on si[1] = %d\n", si[1]);
 						return (NULL);
 					}
 				}
