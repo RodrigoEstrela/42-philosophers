@@ -53,7 +53,10 @@ void	*f_thread(void *m)
 					si[2] += 1;
 			}
 			else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n == 1)
-				forkaction(a, gt(s), i[0], ((t_m *)m));
+			{
+				forkaction(a, gt(s), i[0]);
+				pthread_mutex_unlock(((t_m *)m)->mt1);
+			}
 			else
 				pthread_mutex_unlock(((t_m *) m)->mt1);
 			if (i[1] == 1 && si[1] != 1)

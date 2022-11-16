@@ -34,18 +34,28 @@
 # define P "\033[0;35m"
 # define RE "\033[0m"
 
-typedef struct s_lst{
+typedef struct s_lst
+{
 	int				*q;
 	struct s_lst	*next;
 }					t_lst;
 
-typedef struct s_philo{
+typedef struct s_philo
+{
 	t_lst		*e;
 	t_lst		*d;
 	int			*phn;
 	int			*status;
 	int			*ecnt;
 }					t_philo;
+
+typedef struct threadthings
+{
+	t_philo			*a;
+	long long int	li;
+	int				i;
+	struct timeval	s;
+}					t_tt;
 
 typedef struct s_master
 {
@@ -76,7 +86,7 @@ int				inputcheck(int ac, char **av);
 void			masterbuilder(t_m *m, char **av);
 void			threaddoer(t_m *m, char **av);
 void			masterdestroyer(t_m *m);
-void			forkaction(t_philo *a, long long int t, int i, t_m *m);
+void			forkaction(t_philo *a, long long int t, int i);
 void			endthread(t_philo *a, long long int t, int i);
 int				philodied(t_philo *a, long long int t, int i, int flag);
 int				eat(t_philo *a, t_m *m, struct timeval s, int *i);
