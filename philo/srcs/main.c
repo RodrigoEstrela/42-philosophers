@@ -26,59 +26,54 @@
 // 2: eat counter
 void	*f_thread(void *m)
 {
-	int				*i;
-	long long int	*li;
 	static int		*si;
-	struct timeval	s;
+	t_tt			*p;
 	t_philo			*a;
 
 	si = (int [3]){0, 0, 0};
 	init_thread(m);
-	a = (t_philo *)((t_m *) m)->b[si[0]++];
+	a = (t_philo *)((t_m *) m)->b[si[0]];
+	p = (t_tt *)((t_m *) m)->t[si[0]++];
 	while (si[0] != *(((t_m *) m)->ph_n))
 		;
-	i = (int [2]){*a->phn, 0};
-	gettimeofday(&s, NULL);
-	li = (long long int [2]){gt(s), 0};
+	p->i = malloc(sizeof(int) * 2);
+	p->i[0] = *a->phn;
+	p->i[1] = 0;
+	p->s = (struct timeval *)malloc(sizeof(struct timeval));
+	gettimeofday(p->s, NULL);
+	p->li = (long long int [2]){gt(*p->s), 0};
 	while (si[1] != 1 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
 	{
-		if (!me_dead(*((t_m *)m)->die_t, li[0], s))
+		if (!me_dead(*((t_m *)m)->die_t, p->li[0], *p->s))
 		{
 			pthread_mutex_lock(((t_m *) m)->mt1);
 			if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n != 1)
 			{
-				li[0] = gt(s);
-				i[1] = eat(a, ((t_m *)m), s, i);
-				if (*a->ecnt != -1)
-					si[2] += 1;
+				p->li[0] = gt(*p->s);
+				si[2] += eat(a, ((t_m *)m), p, p->i);
 			}
 			else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n == 1)
 			{
-				forkaction(a, gt(s), i[0]);
+				forkaction(a, gt(*p->s), p->i[0]);
 				pthread_mutex_unlock(((t_m *)m)->mt1);
 			}
 			else
 				pthread_mutex_unlock(((t_m *) m)->mt1);
-			if (i[1] == 1 && si[1] != 1)
+			if (p->i[1] == 1 && si[1] != 1)
 			{
-				li[1] = gt(s);
-				printf(P"%lld ms "C"%d is sleeping\n", gt(s), i[0]);
-				while (gt(s) - li[1] <= *((t_m *)m)->sleep_t)
+				p->li[1] = gt(*p->s);
+				if (sleeper((t_m *)m, p, a) == 1)
 				{
-					if (me_dead(*((t_m *)m)->die_t, li[0], s))
-					{
-						si[1] = philodied(a, gt(s), i[0], 1);
-						return (NULL);
-					}
+					si[1] = 1;
+					return (NULL);
 				}
-				printf(P"%lld ms "B"%d is thinking\n", gt(s), i[0]);
-				i[1] = 0;
+				p->i[1] = 0;
 			}
 		}
 		else
-			si[1] = philodied(a, gt(s), i[0], 0);
+			si[1] = philodied(a, gt(*p->s), p->i[0], 0);
 	}
-	endthread(a, gt(s), i[0]);
+	endthread(a, gt(*p->s), p->i[0], p);
 	return (NULL);
 }
 

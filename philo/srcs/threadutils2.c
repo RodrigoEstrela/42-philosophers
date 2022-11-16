@@ -12,15 +12,22 @@
 
 #include "../inc/philo.h"
 
-//int	sleeper(t_m *m, t_tt t)
-//{
-//	while (gt(t.s) - t.li[1] <= *m->sleep_t)
-//	{
-//		if (me_dead(*m->die_t, t.li[0], t.s))
-//		{
-//			philodied(t.a, gt(t.s), t.i[0], 1);
-//			return (1);
-//		}
-//	}
-//	return (0);
-//}
+int	sleeper(t_m *m, t_tt *t, t_philo *a)
+{
+	printf(P"%lld ms "C"%d is sleeping\n", gt(*t->s), t->i[0]);
+	while (gt(*t->s) - t->li[1] <= *m->sleep_t)
+	{
+		if (me_dead(*m->die_t, t->li[0], *t->s))
+		{
+			philodied(a, gt(*t->s), t->i[0], 1);
+			free(t->i);
+			free(t->s);
+			free(t);
+			return (1);
+		}
+	}
+	printf(P"%lld ms "B"%d is thinking\n", gt(*t->s), t->i[0]);
+	return (0);
+}
+
+

@@ -51,10 +51,9 @@ typedef struct s_philo
 
 typedef struct threadthings
 {
-	t_philo			*a;
-	long long int	li;
-	int				i;
-	struct timeval	s;
+	long long int	*li;
+	int				*i;
+	struct timeval	*s;
 }					t_tt;
 
 typedef struct s_master
@@ -69,6 +68,7 @@ typedef struct s_master
 	t_lst			**forks;
 	t_philo			**b;
 	pthread_t		th[124535];
+	t_tt			**t;
 }						t_m;
 
 void			*f_thread(void *m);
@@ -87,9 +87,10 @@ void			masterbuilder(t_m *m, char **av);
 void			threaddoer(t_m *m, char **av);
 void			masterdestroyer(t_m *m);
 void			forkaction(t_philo *a, long long int t, int i);
-void			endthread(t_philo *a, long long int t, int i);
+void			endthread(t_philo *a, long long int t, int i, t_tt *ta);
 int				philodied(t_philo *a, long long int t, int i, int flag);
-int				eat(t_philo *a, t_m *m, struct timeval s, int *i);
+int				eat(t_philo *a, t_m *m, t_tt *p, int *i);
 void			init_thread(t_m *m);
+int				sleeper(t_m *m, t_tt *t, t_philo *a);
 
 #endif

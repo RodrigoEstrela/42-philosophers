@@ -12,7 +12,7 @@
 
 #include "../inc/philo.h"
 
-void	endthread(t_philo *a, long long int t, int i)
+void	endthread(t_philo *a, long long int t, int i, t_tt *ta)
 {
 	if (*a->status == 1)
 		printf(P"%lld ms "R"%d died\n"RE, t, i);
@@ -20,6 +20,9 @@ void	endthread(t_philo *a, long long int t, int i)
 	free(a->phn);
 	free(a->ecnt);
 	free(a);
+	free(ta->i);
+	free(ta->s);
+	free(ta);
 }
 
 int	philodied(t_philo *a, long long int t, int i, int flag)
@@ -58,15 +61,16 @@ void	forkaction(t_philo *a, long long int t, int i)
 	*a->d->q = 1;
 }
 
-int	eat(t_philo *a, t_m *m, struct timeval s, int *i)
+int	eat(t_philo *a, t_m *m, t_tt *p, int *i)
 {
-	forkaction(a, gt(s), -i[0]);
+	forkaction(a, gt(*p->s), -p->i[0]);
 	pthread_mutex_unlock(((t_m *) m)->mt1);
-	printf(P"%lld ms "G"%d is eating\n", gt(s), i[0]);
+	printf(P"%lld ms "G"%d is eating\n", gt(*p->s), p->i[0]);
 	usleep(*((t_m *)m)->eat_t * 1000);
 	pthread_mutex_lock(((t_m *) m)->mt2);
-	forkaction(a, gt(s), i[0] * 1000);
+	forkaction(a, gt(*p->s), p->i[0] * 1000);
 	pthread_mutex_unlock(((t_m *) m)->mt2);
+	i[1] = 1;
 	return (1);
 }
 

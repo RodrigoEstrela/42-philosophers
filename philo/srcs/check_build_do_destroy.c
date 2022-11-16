@@ -52,11 +52,13 @@ void	masterbuilder(t_m *m, char **av)
 	m->forks = malloc(sizeof(t_lst *));
 	buildlst(m->forks, *m->ph_n, 1);
 	m->b = malloc(sizeof(t_philo) * *m->ph_n);
+	m->t = malloc(sizeof(t_tt) * *m->ph_n);
 }
 
 void	philobuilder(t_m *m, int i, char **av)
 {
 	t_philo		*a;
+	t_tt		*ta;
 
 	a = malloc(sizeof (t_philo));
 	a->e = NULL;
@@ -76,6 +78,8 @@ void	philobuilder(t_m *m, int i, char **av)
 	a->status = malloc(sizeof(int));
 	*a->status = 0;
 	m->b[i - 1] = a;
+	ta = malloc(sizeof(t_tt));
+	m->t[i - 1] = ta;
 }
 
 void	threaddoer(t_m *m, char **av)
@@ -107,5 +111,6 @@ void	masterdestroyer(t_m *m)
 	free(m->sleep_t);
 	deletelist(m->forks);
 	free(m->b);
+	free(m->t);
 	free(m);
 }
