@@ -22,6 +22,7 @@ void	endthread(t_philo *a, long long int t, int i, t_tt *ta)
 	free(a);
 	free(ta->i);
 	free(ta->s);
+	free(ta->li);
 	free(ta);
 }
 

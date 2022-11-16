@@ -22,6 +22,7 @@ int	sleeper(t_m *m, t_tt *t, t_philo *a)
 			philodied(a, gt(*t->s), t->i[0], 1);
 			free(t->i);
 			free(t->s);
+			free(t->li);
 			free(t);
 			return (1);
 		}
@@ -30,4 +31,21 @@ int	sleeper(t_m *m, t_tt *t, t_philo *a)
 	return (0);
 }
 
-
+int	megacoiso(t_m *m, t_tt *p, t_philo *a)
+{
+	if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *) m)->ph_n != 1)
+	{
+		p->li[0] = gt(*p->s);
+		eat(a, ((t_m *) m), p, p->i);
+		return (1);
+	}
+	else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *) m)->ph_n == 1)
+	{
+		forkaction(a, gt(*p->s), p->i[0]);
+		return (2);
+	}
+	else
+	{
+		return (0);
+	}
+}

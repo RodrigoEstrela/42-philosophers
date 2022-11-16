@@ -41,7 +41,9 @@ void	*f_thread(void *m)
 	p->i[1] = 0;
 	p->s = (struct timeval *)malloc(sizeof(struct timeval));
 	gettimeofday(p->s, NULL);
-	p->li = (long long int [2]){gt(*p->s), 0};
+	p->li = malloc(sizeof(long long int) * 2);
+	p->li[0] = gt(*p->s);
+	p->li[1] = 0;
 	while (si[1] != 1 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
 	{
 		if (!me_dead(*((t_m *)m)->die_t, p->li[0], *p->s))
