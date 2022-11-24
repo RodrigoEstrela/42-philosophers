@@ -24,6 +24,20 @@
 // 0: thread init check
 // 1: death checker
 // 2: eat counter
+
+t_tt *build_threadthings(t_tt *p, int n)
+{
+	p->i = malloc(sizeof(int) * 2);
+	p->i[0] = n;
+	p->i[1] = 0;
+	p->s = (struct timeval *)malloc(sizeof(struct timeval));
+	gettimeofday(p->s, NULL);
+	p->li = malloc(sizeof(long long int) * 2);
+	p->li[0] = gt(*p->s);
+	p->li[1] = 0;
+	return (p);
+}
+
 void	*f_thread(void *m)
 {
 	static int		*si;
@@ -36,16 +50,11 @@ void	*f_thread(void *m)
 	p = (t_tt *)((t_m *) m)->t[si[0]++];
 	while (si[0] != *(((t_m *) m)->ph_n))
 		;
-	p->i = malloc(sizeof(int) * 2);
-	p->i[0] = *a->phn;
-	p->i[1] = 0;
-	p->s = (struct timeval *)malloc(sizeof(struct timeval));
-	gettimeofday(p->s, NULL);
-	p->li = malloc(sizeof(long long int) * 2);
-	p->li[0] = gt(*p->s);
-	p->li[1] = 0;
-	while (si[1] != 1 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
+	p = build_threadthings(p, *a->phn);
+	while (si[1] == 0 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
 	{
+		if (p->i[0] % 2 == 0)
+			usleep(5000);
 		if (!me_dead(*((t_m *)m)->die_t, p->li[0], *p->s))
 		{
 			pthread_mutex_lock(((t_m *) m)->mt1);
@@ -64,13 +73,17 @@ void	*f_thread(void *m)
 			if (p->i[1] == 1 && si[1] != 1)
 			{
 				p->li[1] = gt(*p->s);
-				if (sleeper((t_m *)m, p, a) == 1)
+				if (sleeper((t_m *)m, p, a, si[1]) == 1)
 				{
 					si[1] = 1;
+					printf("si[1] = %d\n", si[1]);
 					return (NULL);
 				}
 				p->i[1] = 0;
 			}
+//			si[1] = sleeper2(p, si[1], ((t_m *) m), a);
+//			if (si[1] == 1)
+//				return (NULL);
 		}
 		else
 			si[1] = philodied(a, gt(*p->s), p->i[0], 0);
