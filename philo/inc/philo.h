@@ -92,6 +92,6 @@ int				philodied(t_philo *a, long long int t, int i, int flag);
 int				eat(t_philo *a, t_m *m, t_tt *p, int *i);
 void			init_thread(t_m *m);
 int				sleeper(t_m *m, t_tt *t, t_philo *a, int s);
-int				sleeper2(t_tt *p, int s, t_m *m, t_philo *a);
+void			unllock(t_philo *a, t_m *m, t_tt *p);
 
 #endif

@@ -19,7 +19,6 @@ int	sleeper(t_m *m, t_tt *t, t_philo *a, int s)
 	{
 		if (me_dead(*m->die_t, t->li[0], *t->s))
 		{
-			s = 1;
 			philodied(a, gt(*t->s), t->i[0], 1);
 			free(t->i);
 			free(t->s);
@@ -32,14 +31,8 @@ int	sleeper(t_m *m, t_tt *t, t_philo *a, int s)
 	return (0);
 }
 
-int sleeper2(t_tt *p, int s, t_m *m, t_philo *a)
+void unllock(t_philo *a, t_m *m, t_tt *p)
 {
-	if (p->i[1] == 1 && s != 1)
-	{
-		p->li[1] = gt(*p->s);
-		if (sleeper(m, p, a, s) == 1)
-			return (1);
-		p->i[1] = 0;
-	}
-	return (0);
+	forkaction(a, gt(*p->s), p->i[0]);
+	pthread_mutex_unlock(((t_m *)m)->mt1);
 }

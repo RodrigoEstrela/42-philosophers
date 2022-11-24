@@ -64,26 +64,17 @@ void	*f_thread(void *m)
 				si[2] += eat(a, ((t_m *)m), p, p->i);
 			}
 			else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n == 1)
-			{
-				forkaction(a, gt(*p->s), p->i[0]);
-				pthread_mutex_unlock(((t_m *)m)->mt1);
-			}
+				unllock(a, ((t_m *)m), p);
 			else
 				pthread_mutex_unlock(((t_m *) m)->mt1);
 			if (p->i[1] == 1 && si[1] != 1)
 			{
 				p->li[1] = gt(*p->s);
-				if (sleeper((t_m *)m, p, a, si[1]) == 1)
-				{
-					si[1] = 1;
-					printf("si[1] = %d\n", si[1]);
+				si[1] = sleeper((t_m *)m, p, a, si[1]);
+				if (si[1] == 1)
 					return (NULL);
-				}
 				p->i[1] = 0;
 			}
-//			si[1] = sleeper2(p, si[1], ((t_m *) m), a);
-//			if (si[1] == 1)
-//				return (NULL);
 		}
 		else
 			si[1] = philodied(a, gt(*p->s), p->i[0], 0);
