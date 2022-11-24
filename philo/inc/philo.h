@@ -93,5 +93,7 @@ int				eat(t_philo *a, t_m *m, t_tt *p, int *i);
 void			init_thread(t_m *m);
 int				sleeper(t_m *m, t_tt *t, t_philo *a, int s);
 void			unllock(t_philo *a, t_m *m, t_tt *p);
+int				eater(t_m *m, t_tt *p, t_philo *a);
+int				megacoiso(t_m *m, t_tt *p, t_philo *a);
 
 #endif

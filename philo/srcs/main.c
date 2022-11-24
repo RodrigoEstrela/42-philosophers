@@ -25,7 +25,7 @@
 // 1: death checker
 // 2: eat counter
 
-t_tt *build_threadthings(t_tt *p, int n)
+t_tt	*build_threadthings(t_tt *p, int n)
 {
 	p->i = malloc(sizeof(int) * 2);
 	p->i[0] = n;
@@ -57,22 +57,15 @@ void	*f_thread(void *m)
 			usleep(5000);
 		if (!me_dead(*((t_m *)m)->die_t, p->li[0], *p->s))
 		{
-			pthread_mutex_lock(((t_m *) m)->mt1);
-			if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n != 1)
-			{
-				p->li[0] = gt(*p->s);
-				si[2] += eat(a, ((t_m *)m), p, p->i);
-			}
-			else if (*a->e->q == 1 && *a->d->q == 1 && *((t_m *)m)->ph_n == 1)
-				unllock(a, ((t_m *)m), p);
-			else
-				pthread_mutex_unlock(((t_m *) m)->mt1);
+			si[2] += megacoiso(((t_m *)m), p, a);
 			if (p->i[1] == 1 && si[1] != 1)
 			{
 				p->li[1] = gt(*p->s);
-				si[1] = sleeper((t_m *)m, p, a, si[1]);
-				if (si[1] == 1)
+				if (sleeper((t_m *)m, p, a, si[1]) == 1)
+				{
+					si[1] = 1;
 					return (NULL);
+				}
 				p->i[1] = 0;
 			}
 		}
