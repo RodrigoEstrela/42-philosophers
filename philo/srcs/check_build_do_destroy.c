@@ -36,11 +36,14 @@ int	inputcheck(int ac, char **av)
 void	masterbuilder(t_m *m, char **av)
 {
 	m->mt1 = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(m->mt1, NULL);
+	if (pthread_mutex_init(m->mt1, NULL) != 0)
+		return ;
 	m->mt2 = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(m->mt2, NULL);
+	if (pthread_mutex_init(m->mt2, NULL) != 0)
+		return ;
 	m->mt3 = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(m->mt3, NULL);
+	if (pthread_mutex_init(m->mt3, NULL) != 0)
+		return ;
 	m->ph_n = malloc(sizeof(int));
 	*m->ph_n = ft_atoi(av[1]);
 	m->die_t = malloc(sizeof(int));
@@ -53,6 +56,8 @@ void	masterbuilder(t_m *m, char **av)
 	buildlst(m->forks, *m->ph_n, 1);
 	m->b = malloc(sizeof(t_philo) * *m->ph_n);
 	m->t = malloc(sizeof(t_tt) * *m->ph_n);
+	m->morreu = malloc(sizeof(int));
+	*m->morreu = 0;
 }
 
 void	philobuilder(t_m *m, int i, char **av)
@@ -91,7 +96,10 @@ void	threaddoer(t_m *m, char **av)
 		philobuilder(m, i, av);
 	i = -1;
 	while (++i < ft_atoi(av[1]))
-		pthread_create(&m->th[i], NULL, f_thread, m);
+	{
+		if (pthread_create(&m->th[i], NULL, f_thread, m) != 0)
+			return ;
+	}
 	i = -1;
 	while (++i < ft_atoi(av[1]))
 		pthread_join(m->th[i], NULL);
@@ -109,6 +117,7 @@ void	masterdestroyer(t_m *m)
 	free(m->die_t);
 	free(m->eat_t);
 	free(m->sleep_t);
+	free(m->morreu);
 	deletelist(m->forks);
 	free(m->b);
 	free(m->t);

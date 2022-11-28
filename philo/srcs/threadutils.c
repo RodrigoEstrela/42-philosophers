@@ -15,7 +15,7 @@
 void	endthread(t_philo *a, long long int t, int i, t_tt *ta)
 {
 	if (*a->status == 1)
-		printf(P"%lld ms "R"%d died\n"RE, t, i);
+		printf("%s%lld ms %s%d died\n%s", P, t, R, i, RE);
 	free(a->status);
 	free(a->phn);
 	free(a->ecnt);
@@ -33,7 +33,7 @@ int	philodied(t_philo *a, long long int t, int i, int flag)
 	else if (flag == 1)
 	{
 		*a->status = 1;
-		printf(P"%lld ms "R"%d died\n"RE, t, i);
+		printf("%s%lld ms %s%d died\n%s", P, t, R, i, RE);
 		free(a->status);
 		free(a->phn);
 		free(a->ecnt);
@@ -47,15 +47,15 @@ void	forkaction(t_philo *a, long long int t, int i)
 	if (i < 0)
 	{
 		*a->e->q = 2;
-		printf(P"%lld ms "Y"%d has taken a fork\n", t, -i);
+		printf("%s%lld ms %s%d has taken a fork\n", P, t, Y, -i);
 		*a->d->q = 2;
-		printf(P"%lld ms "Y"%d has taken a fork\n", t, -i);
+		printf("%s%lld ms %s%d has taken a fork\n", P, t, Y, -i);
 		return ;
 	}
 	if (i > 0 && i < 1000)
 	{
 		*a->e->q = 2;
-		printf(P"%lld ms "Y"%d has taken a fork\n", t, i);
+		printf("%s%lld ms %s%d has taken a fork\n", P, t, Y, i);
 		return ;
 	}
 	*a->e->q = 1;

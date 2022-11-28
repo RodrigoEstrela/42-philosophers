@@ -22,8 +22,7 @@
 // //////////////////
 // static int array
 // 0: thread init check
-// 1: death checker
-// 2: eat counter
+// 1: eat counter
 
 t_tt	*build_threadthings(t_tt *p, int n)
 {
@@ -35,6 +34,8 @@ t_tt	*build_threadthings(t_tt *p, int n)
 	p->li = malloc(sizeof(long long int) * 2);
 	p->li[0] = gt(*p->s);
 	p->li[1] = 0;
+	if (p->i[0] % 2 == 0)
+		usleep(5000);
 	return (p);
 }
 
@@ -44,33 +45,24 @@ void	*f_thread(void *m)
 	t_tt			*p;
 	t_philo			*a;
 
-	si = (int [3]){0, 0, 0};
+	si = (int [2]){0, 0};
 	init_thread(m);
 	a = (t_philo *)((t_m *) m)->b[si[0]];
 	p = (t_tt *)((t_m *) m)->t[si[0]++];
 	while (si[0] != *(((t_m *) m)->ph_n))
 		;
 	p = build_threadthings(p, *a->phn);
-	while (si[1] == 0 && (*a->ecnt == -1 || si[2] < *a->ecnt * si[0]))
+	while (*((t_m *)m)->morreu == 0 && (*a->ecnt == -1
+			|| si[1] < *a->ecnt * *((t_m *)m)->ph_n) && si[0] < 1000)
 	{
-		if (p->i[0] % 2 == 0)
-			usleep(5000);
 		if (!me_dead(*((t_m *)m)->die_t, p->li[0], *p->s))
 		{
-			si[2] += megacoiso(((t_m *)m), p, a);
-			if (p->i[1] == 1 && si[1] != 1)
-			{
-				p->li[1] = gt(*p->s);
-				if (sleeper((t_m *)m, p, a, si[1]) == 1)
-				{
-					si[1] = 1;
-					return (NULL);
-				}
-				p->i[1] = 0;
-			}
+			si[1] += megacoiso(((t_m *)m), p, a);
+			if (sleeper_2((t_m *)m, p, a) == 1)
+				return (NULL);
 		}
 		else
-			si[1] = philodied(a, gt(*p->s), p->i[0], 0);
+			*((t_m *)m)->morreu = philodied(a, gt(*p->s), p->i[0], 0);
 	}
 	endthread(a, gt(*p->s), p->i[0], p);
 	return (NULL);

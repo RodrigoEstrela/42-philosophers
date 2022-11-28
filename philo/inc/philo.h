@@ -69,6 +69,7 @@ typedef struct s_master
 	t_philo			**b;
 	pthread_t		th[124535];
 	t_tt			**t;
+	int				*morreu;
 }						t_m;
 
 void			*f_thread(void *m);
@@ -91,7 +92,8 @@ void			endthread(t_philo *a, long long int t, int i, t_tt *ta);
 int				philodied(t_philo *a, long long int t, int i, int flag);
 int				eat(t_philo *a, t_m *m, t_tt *p, int *i);
 void			init_thread(t_m *m);
-int				sleeper(t_m *m, t_tt *t, t_philo *a, int s);
+int				sleeper(t_m *m, t_tt *t, t_philo *a, int *s);
+int				sleeper_2(t_m *m, t_tt *p, t_philo *a);
 void			unllock(t_philo *a, t_m *m, t_tt *p);
 int				eater(t_m *m, t_tt *p, t_philo *a);
 int				megacoiso(t_m *m, t_tt *p, t_philo *a);
